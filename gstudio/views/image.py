@@ -85,10 +85,11 @@ def checkpageexist(request):
         dic={}
         title=request.GET['title']
         v=check_page_exists(title)
-        if v:
-                        dic['page']=1
-        else:
-                dic['page']=0
+        # if v:
+        #                 dic['page']=1
+        # else:
+        #         dic['page']=0
+        dic['page']=v
         jsonobject = json.dumps(dic)
         return HttpResponse(jsonobject, "application/json")
 
@@ -481,9 +482,9 @@ def edit_title(request):
 		nid.save()
 		nid=NID.objects.get(id=titleid)
 		nidtitle = nid.title
-  	#t = get_template('gstudio/editedobjecttitle.html')
-	#html = t.render(Context({'title':nidtitle}))
-	return HttpResponse(nidtitle)
+  	t = get_template('gstudio/editedobjecttitle.html')
+	html = t.render(Context({'title':nidtitle}))
+	return HttpResponse(html)
 
 
 def addpriorpost(request):
@@ -494,8 +495,9 @@ def addpriorpost(request):
 		title=request.GET['title']
 		titleid=request.GET['titleid']
 		gbid1=Gbobject.objects.get(id=titleid)
-		gbid2 = Gbobject.objects.get(title=title)
-		gbid1.prior_nodes.add(gbid2)
+		gbid2 = Gbobject.objects.filter(title=title)
+                gbid2=gbid2[0]
+                gbid1.prior_nodes.add(gbid2)
 		gbid1.save()
 		gbid2.posterior_nodes.add(gbid1)
 		gbid2.save()

@@ -305,7 +305,7 @@ jQuery(document).ready(function($) {
             $("#threadsave").hide();
             activity="edited_thread"
             not_obj=id
-	   
+	    $("#threadedit"+id).val("editthread");
 	    if($("input:radio[name=intimate]").is(':checked')) {
         	var radio_select = $('input:radio[name=intimate]:checked').val();
         	if(radio_select=="Yes"){
@@ -318,7 +318,7 @@ jQuery(document).ready(function($) {
 			 }
 	    }	
 	    else{ notifedtdel(); }
-            $("#threadedit"+id).val("editthread");
+
             $(".commenteditor").hide();
             $(".editcontent").hide();
 	    $(".orgitdownContainer").hide();

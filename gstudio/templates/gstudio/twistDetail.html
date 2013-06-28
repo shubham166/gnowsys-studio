@@ -12,6 +12,14 @@
     $(".savecontent").hide();   
     $(".submitresponse").hide();
     $("#editthreadsave").hide();
+    url="/gstudio/resources/loom/status/"+{{thread.id}}
+    $.ajax({
+         url: url,
+         type: 'GET',
+         success: function(data){
+              $("#status").html(data);
+                               }
+     });
 
 });
 
@@ -237,12 +245,12 @@ $.ajax({
 
 
 </script>
-<!-- script for to obtain response and refresh div !-->
-{% if user.is_authenticated %}
+<!--script for to obtain response and refresh div 
+{% if user.isauthenticated %}
 <script type=text/javascript>
 setInterval(function () {
     refreshCheck();
-}, 10000);
+}, 20000);
 function refreshCheck() {
 //alert("inside refresh check");
     if (document.getElementById("gnoweditor").style.visibility!="visible" && (!$('.chkdel').is(':checked')) && (!$('.star').is(':checked')) )
@@ -252,6 +260,7 @@ function refreshCheck() {
     }
 }
 //setInterval(updateMsg, 5000);
+
 function updateMsg()
 {
   //   alert("inside updatemsg");
@@ -261,11 +270,15 @@ $.ajax({
         data: {twistid:{{twist.id}},userid:{{user.id}},admin_id:{{admin_id}},csrfmiddlewaretoken: '{{ csrf_token }}' },
         success: function(data){
                 $('#response'+{{twist.id}}).html(data);
-                checkeditor = 0;},});
+
+                checkeditor = 0;
+},
+
+});
 
 }
 </script>
-{% endif %}
+{% endif %}!-->
 
 <h2><a href="/gstudio/group/gnowsys-grp/{{thread.id}}">{{thread.title}}</a>»{{twist.title}}</h2>
 <div id="twist{{ twist.id}}" class="divHide">
@@ -395,5 +408,10 @@ $.ajax({
 {% endif %}
 
 </div>
+</div>
+{% endblock %}
+{% block sidebardetails %}
+<input type="button" id="showstatus" value="Loom Status" onclick="showloomstatus()">
+<div id="status">
 </div>
 {% endblock %}

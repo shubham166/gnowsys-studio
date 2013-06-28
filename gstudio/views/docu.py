@@ -60,6 +60,7 @@ def docu(request):
 			variables = RequestContext(request,{'documents':list1,'fav':fav})
 			template = "gstudio/docu.html"
 			return render_to_response(template, variables)	
+	
 
 		if delete != "":
 			each=q.get(id=dn)
@@ -73,13 +74,22 @@ def docu(request):
 			return render_to_response(template, vars)
 		if sub3 != "":
 			if sdoc != "":
-				vidon = Objecttype.objects.get(title="Document")
-				vido_new = vidon.get_nbh['contains_members']
-				vido = vido_new.filter(title__contains=sdoc)
-				vido2 = vido.order_by(sub3)
-				variables = RequestContext(request,{'documents':vido2,'val':sdoc})
-				template = "gstudio/docu.html"
-				return render_to_response(template, variables)
+				if sub3 == "title":
+					vidon = Objecttype.objects.get(title="Document")
+					vido_new = vidon.get_nbh['contains_members']
+					vido = vido_new.filter(title__icontains=sdoc)
+					vido2 = vido.order_by(sub3)
+					variables = RequestContext(request,{'documents':vido2,'val':sdoc})
+					template = "gstudio/docu.html"
+					return render_to_response(template, variables)
+				else: 
+					vidon = Objecttype.objects.get(title="Document")
+					vido_new = vidon.get_nbh['contains_members']
+					vido = vido_new.filter(creation_date__icontains=sdoc)
+					vido2 = vido.order_by(sub3)
+					variables = RequestContext(request,{'documents':vido2,'val':sdoc})
+					template = "gstudio/docu.html"
+					return render_to_response(template, variables)
 			else:
 				vidon = Objecttype.objects.get(title="Document")
 				vido_new = vidon.get_nbh['contains_members']

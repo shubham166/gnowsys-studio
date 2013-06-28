@@ -24,7 +24,31 @@ count=0
 response_set=[]
 
 
+def get_all_logged_in_users():
+    # Query all non-expired sessions
+    sessions = Session.objects.filter(expire_date__gte=date_methds.datetime.now())
+    uid_list = []
 
+    # Build a list of user ids from that query
+    for session in sessions:
+        data = session.get_decoded()
+        uid_list.append(data.get('_auth_user_id', None))
+
+    # Query all logged in users based on id list
+    return User.objects.filter(id__in=uid_list)
+
+def delete_all_unexpired_sessions_for_user(user, session_to_omit=None):
+    for session in all_unexpired_sessions_for_user(user):
+        if session is not session_to_omit:
+            session.delete()
+def all_unexpired_sessions_for_user(user):
+    user_sessions = []
+    all_sessions  = Session.objects.filter(expire_date__gte=date_methds.datetime.now())
+    for session in all_sessions:
+        session_data = session.get_decoded()
+        if user.pk == session_data.get('_auth_user_id'):
+            user_sessions.append(session)
+    return user_sessions
 
 def recur_responses(twist):
     global lst1
@@ -41,7 +65,7 @@ def get_recur_responses_of_twist(twist):
     return lst1
 def get_rate_of_object_of_user(user,sysid):
 #   us = User.objects.get(username="gnowgi")                                                                                                 
-    print "insget",sysid,user
+#    print "insget",sysid,user
     voteofuser = Vote.objects.filter(user = user)
     rating_made = 0
     #voteofuser.count()                                                                                                                      
@@ -49,6 +73,7 @@ def get_rate_of_object_of_user(user,sysid):
         objectofvote = vote.content_object
         if objectofvote.objecttypes.all():
             if objectofvote.objecttypes.all()[0].title=='Reply':
+#                print "pr",objectofvote
                 objectofvoteid = objectofvote.getthread_of_response.id
                 if sysid == objectofvoteid:
                     rating_made = rating_made + 1
@@ -83,17 +108,40 @@ def get_all_logged_in_users():
                                                                                                                                              
     return User.objects.filter(id__in=uid_list)
 
+# def get_authors_of_response(user,thread):
+#        count =0
+#        for each in thread.system_set.all()[0].gbobject_set.all():
+#            print "threads=",each
+#            response_set=recur_responses(each)
+#            print response_set
+#            for each1 in response_set:
+#                print each1.authors.all()[0],str(user)
+#                if str(each1.authors.all()[0])==str(user):
+#                    count=count+1
+#        return count
+
 def get_authors_of_response(user,thread):
        count =0
+       ratngs = 0
+       dictret={}
+        # for vote in voteofuser:                                                                                                           
+        #     objectofvote = vote.content_object                                                                                            
+        #     if objectofvote.objecttypes.all():                                                                                                    #         if objectofvote.objecttypes.all()[0].title=='Reply':                                                                              #             objectofvoteid = objectofvote.getthread_of_response.id                                                                        #             if sysid == objectofvoteid:                                                                                                   #                 rating_made = rating_made + 1                                                                                             # return rating_made                                                                                                               
+  
        for each in thread.system_set.all()[0].gbobject_set.all():
-           print "threads=",each
            response_set=recur_responses(each)
-           print response_set
            for each1 in response_set:
-               print each1.authors.all()[0],str(user)
                if str(each1.authors.all()[0])==str(user):
                    count=count+1
-       return count
+#                   print "obj",each1
+                   if each1.rating.get_ratings():
+                       lst=each1.rating.get_ratings()
+#                       print "ratings",lst
+                       ratngs+=lst.count()
+       dictret['respcount']=count
+       dictret['ratng']=ratngs
+       return dictret
+
 
 def get_no_of_twist_posted(user,thread):
        sys=System.objects.get(title=thread)
@@ -108,31 +156,63 @@ def loom_status(pageid):
   retdict={}
   userdet=[]
   thdid=pageid
-  #get subscribers                                                                                                                           
+  #get subscribers                                                                                                                        
   sys=System.objects.get(id=pageid)
   box=sys.system_set.all()[0]
+  twistset=box.gbobject_set.all()
   logged_users=get_all_logged_in_users()
-  #get online-offline                                                                                                                        
-  print box.member_set.all(),"memset"
-  for each in box.member_set.all():
-      print each,"-eacch"
-      eachuser=User.objects.get(username=each)
-      print "eauseR",eachuser
-      if eachuser in logged_users:
+  #get online-offline                                                                                                                       
+  for eachsubscbr in box.member_set.all():
+      count =0
+      ratngs = 0
+      nooftwists=0
+      pstc=0
+      voteofuser = Vote.objects.filter(user = eachsubscbr)
+      rating_made = 0
+#      eachuser=User.objects.get(username=eachsubscbr)
+      if eachsubscbr in logged_users:
          userdet.append("green1")
       else:
          userdet.append("grey")
-#     get no-of-posts(twist/responses)
-#     resps=get_authors_of_response(each,sys)                                                                                              
-#     thds=get_no_of_twist_posted(each,sys)                                                                                                
-#     strng=str(thds)+"/"+str(resps)                                                                                                        #     userdet.append(strng)                                                                                                                
-# #get Ratings user made                                                                                                                   
-#     ratngs=get_rate_of_object_of_user(each,sys.id)                                                                                       
-#     userdet.append(str(ratngs))                                                                                                          
-# #responses his post received                                                                                                             
-#     psts=posts_recd_for_subscr(each.id,thdid)                                                                                             #     userdet.append(str(psts))                                                                                                            
-      retdict[each.username]=userdet
+#  get no-of-posts(twist/responses)
+      for eachtwist in twistset:
+           respns=0
+           if str(eachtwist.authors.all()[0])==str(eachsubscbr):
+               nooftwists+=1
+           response_set=recur_responses(eachtwist)
+           for each1 in response_set:
+               if str(each1.authors.all()[0])==str(eachsubscbr):
+#                   print "eachte",eachtwist,each1.id
+                   respns=recur_responses(each1)
+                   pstc +=len(respns)
+                   count=count+1
+                   lst=each1.rating.get_ratings()
+                   if lst:
+                       ratngs+=lst.count()
+
+#      resps=get_authors_of_response(each,sys)                                                                                              
+#      thds=get_no_of_twist_posted(each,sys)                                                                                                
+      strng=str(nooftwists)+"/"+str(count)
+      userdet.append(strng) 
+#get Ratings user made
+      for vote in voteofuser:
+          objectofvote = vote.content_object
+          if objectofvote.objecttypes.all():
+              if objectofvote.objecttypes.all()[0].title=='Reply':
+                  print "pr",objectofvote
+                  objectofvoteid = objectofvote.getthread_of_response.id
+                  if thdid== objectofvoteid:
+                      rating_made = rating_made + 1                                                                                 
+#      ratngsuser=get_rate_of_object_of_user(eachsubscbr,sys.id)
+      userdet.append(str(rating_made))
+      userdet.append(str(ratngs))                                                                                                   
+#      print "rantngs",userdet
+#responses his post received
+#      psts=posts_recd_for_subscr(each.id,thdid)
+      userdet.append(str(pstc))
+      retdict[eachsubscbr.username]=userdet
       userdet=[]
+#      print "fin",retdict
   return retdict
 
 
@@ -149,7 +229,7 @@ def check_page_exists(pgetocheck):
             getob=System.objects.get(id=each.id)
             for eachtitle in getob.systemtypes.all():
                 if eachtitle.title=='Wikipage':
-                    print "wiki"
+#                    print "wiki"
                     fl=1 
                     return fl
             fl=2
@@ -181,7 +261,7 @@ def get_pdrawer():
     pageid=[]
     dict1={}
     #wikiset = Systemtype.objects.all()
-    drawerset = Systemtype.objects.get(title="Wikipage")
+    drawerset =Systemtype.objects.get(title="Wikipage")
     drawer= drawerset.member_systems.all()
     
     for each in drawer:
@@ -245,7 +325,6 @@ def make_rep_object(replytext,auth_id,usr):
  data1 = data.readlines()
  # remove header content information
  data2 = data1[107:]
- 
  dataa = data2[data2.index('<div id="content">\n')]='<div id=" "\n'
  data3 = data2[:-6]
 
@@ -539,10 +618,13 @@ def create_meeting(title,idusr,content,usr):
  sys1.sites.add(Site.objects.get_current())
  return sys.id 
 
-def create_wikipage(title,idusr,content_org,usr,collection,list1):
+def create_wikipage(title,idusr,content_org,usr,collection,list1,status):
  sys = System()
  sys.title = title
- sys.status = 2
+ if status:
+     sys.status = 1
+ else:
+     sys.status = 2
  boolean=False
  boolean=collection
  
@@ -864,10 +946,11 @@ def check_usr_admin(userid):
 
 def get_factory_loom_OTs():
  retlist=[]
- for each in Objecttype.objects.all():
-	if each.parent:
-		if ((each.parent.title=='Factory_Object') and (str(each.slug)[0:4]=='loom')):
-			retlist.append(each.title)
+ nts=Nodetype.objects.get(title='Factory_Object')
+ ots=Objecttype.objects.filter(parent=nts)
+ for each in ots:
+         if (str(each.slug)[0:4]=='loom'):
+             retlist.append(each.title)
  return retlist
 
 def get_home_content():

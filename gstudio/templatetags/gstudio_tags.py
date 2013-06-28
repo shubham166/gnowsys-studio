@@ -449,6 +449,11 @@ def get_factory_looms():
    fs = get_factory_loom_OTs()
    return fs
 
+@register.inclusion_tag('gstudio/puttagsearch.html')
+def put_tag_search():
+   template='gstudio/puttagsearch.html'
+   return {'template':template}
+
 @register.assignment_tag
 def put_home_content():
    var = get_home_content()
@@ -529,10 +534,11 @@ def get_pri_post_page():
     listobject = []
     gbobject = Gbobject.objects.all()
     for each in gbobject:
-        listobject.append(each.__str__())
+        if not ('page box of' in each.title or 'message box of' in each.title):
+            listobject.append(each.__str__())
     return str(listobject)
 
 @register.inclusion_tag('gstudio/addingrate.html')
-def adding_rating(object_to_rate):
+def adding_rating(object_to_rate):#,csrf_token):
     template='gstudio/addingrate.html'
-    return {'template':template,'object':object_to_rate,'javascriptRate':"javascript"}
+    return {'template':template,'object':object_to_rate,'javascriptRate':"javascript"}#,'csrf_token':csrf_token}

@@ -24,7 +24,11 @@ def pagedashboard(request,pageid):
    pageid = int(pageid)
    flag= False
    collection=False
-
+   status=False
+   usr1=request.user
+   is_staff=False
+   if usr1.is_staff:
+      is_staff=True
    page_ob = System.objects.get(id=pageid)
    test=""
    test=get_gbobjects(page_ob.id)
@@ -88,8 +92,9 @@ def pagedashboard(request,pageid):
    iscoll=collsys.filter(title="Collection")
    if iscoll:
       collection=True
-
-   variables = RequestContext(request, {'ot' : ot,'section' : Section,'page_ob' : page_ob,'object':page_ob,'admin_m':admin_m,"flag" : flag,"admin_id" : admin_id,'post':post,'test':test, 'test1':test1,'collection':collection})
+   if (page_ob.status == 1):
+      status=True
+   variables = RequestContext(request, {'ot' : ot,'section' : Section,'page_ob' : page_ob,'object':page_ob,'admin_m':admin_m,"flag" : flag,"admin_id" : admin_id,'post':post,'test':test, 'test1':test1,'collection':collection,'status':status,"is_staff":is_staff})
    template= "metadashboard/download.html"
    template = "metadashboard/pgedashboard.html"
    return render_to_response(template, variables)

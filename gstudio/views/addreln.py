@@ -20,7 +20,64 @@ from objectapp.models import System,Gbobject
 from gstudio.models import NID
 from django.template.loader import get_template
 from django.template import Context
+from tagging.models import Tag
 import json
+
+def refreshsearch(request):
+    t = get_template('gstudio/puttagsearchrefresh.html')
+    html = t.render(Context())
+    return HttpResponse(html)
+
+def puttagsearch(request):
+    first=request.GET.get("first","")
+    second=request.GET.get("second","")
+    oprtn=request.GET.get("operation","")
+    print request.method,"req",first,second
+    tag1=Tag.objects.filter(name=first)
+    if tag1:
+        tag1=Tag.objects.get(name=first)
+        ft=tag1.name
+    tag2=Tag.objects.filter(name=second)
+    if tag2:
+        tag2=Tag.objects.get(name=second)
+        st=tag2.name
+    fl=0
+    if oprtn=="":
+        if tag1 or tag2:
+            fl=1
+    lst={}
+    flst={}
+    if oprtn=="AND" or fl==1:
+        if tag1:
+            for each in Gbobject.objects.all():
+                if ft in each.tags:
+                    lst[each]=each.get_view_object_url
+                    if not tag2:
+                       flst=lst
+        if tag2 and tag1:
+            for each1 in lst:
+                if st in each1.tags:
+                    flst[each1]=each1.get_view_object_url
+        else:
+            if tag2:
+                for each in Gbobject.objects.all():
+                    if st in each.tags:
+                        flst[each]=each.get_view_object_url
+    if oprtn=="OR":
+        if tag1:
+            for each in Gbobject.objects.all():
+                if ft in each.tags:
+                    flst[each]=each.get_view_object_url
+        if tag2:
+            for each1 in Gbobject.objects.all():
+                if st in each1.tags:
+                    flst[each1]=each1.get_view_object_url
+    variables = RequestContext(request,{'tags':flst,'tag1':tag1,'tag2':tag2})
+    template = "gstudio/reftags.html"
+    return render_to_response(template, variables)
+
+
+
 
 def getrefreshrts(request):
     retrt={}
@@ -71,7 +128,7 @@ def addreln(request,meetob):
         if request.method == 'GET' :
             relntype=request.GET['relnobj']
             obobj=request.GET['obobject']
-        rt=Relationtype.objects.filter(title=relntype)
+#        rt=Relationtype.objects.filter(title=relntype)
         a.left_subject=Gbobject.objects.get(id=meetob)
         obt=Gbobject.objects.filter(title=obobj)
         rt=Relationtype.objects.filter(title=relntype)

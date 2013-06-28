@@ -252,11 +252,11 @@ def video(request):
 					
 		if sub3 != "":
 			if svid != "":
-				if sub2 == "":
+				if sub3 == "title":
 				
 					vidon = Objecttype.objects.get(title="Video")
 					vido_new = vidon.get_nbh['contains_members']
-					vido = vido_new.filter(title__contains=svid)
+					vido = vido_new.filter(title__icontains=svid)
 					if sub3 == 'title':
 						vido2 = vido.order_by(sub3)
 					else:
@@ -267,11 +267,8 @@ def video(request):
 				else:
 					vidon = Objecttype.objects.get(title="Video")
 					vido_new = vidon.get_nbh['contains_members']
-					vido = vido_new.filter(slug__contains=svid)
-					if sub3 == 'title':
-						vido2 = vido.order_by(sub3)
-					else:
-						vido2 = sort_video(vido)
+					vido = vido_new.filter(creation_date__icontains=svid)
+					vido2 = vido.order_by(sub3)
 					variables = RequestContext(request,{'vids':vido2,'val':svid})
 					template = "gstudio/video.html"
 					return render_to_response(template, variables)
@@ -573,3 +570,7 @@ def md5Checksum(filePath):
             break
         m.update(data)
     return m.hexdigest()
+def wetube(request):
+        vars=RequestContext({})
+        template="gstudio/wetube.html"
+        return render_to_response(template,vars)

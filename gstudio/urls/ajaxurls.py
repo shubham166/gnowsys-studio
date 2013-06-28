@@ -31,6 +31,7 @@ urlpatterns = patterns('gstudio.views.ajaxviews',
                        url(r'^contentadd/$', 'AjaxAddContent', name='ajax_views_contentadd'),
 		       url(r'^draweradd/$', 'AjaxAddDrawer', name='ajax_views_draweradd'),
                        url(r'^htmlexport/$', 'HtmlExport', name='ajax_view_htmlexport'),
+                       url(r'^status/$', 'Status', name='ajax_views_status'),	
                        url(r'^collectionadd/$', 'AjaxAddCollection', name='ajax_view_collectionadd'),
                        url(r'^iswiki/$', 'IsWiki', name='ajax_view_iswiki'),
                        url(r'^deletepriorpage/$', 'ajaxDeletePriorpage', name='ajax_delete_priorpage'),
@@ -39,5 +40,5 @@ urlpatterns = patterns('gstudio.views.ajaxviews',
                        url(r'^sendInvitation/$', 'ajaxSendInvitation', name='ajax_SendInvitation'),
                        url(r'^releaseBlockResponseOfTwist/$', 'ajaxReleaseBlockResponseOfTwist', name='ajax_ReleaseBlockResponseOfTwist'),
                        url(r'^ajaxResponseReciev/$', 'ajaxResponseReciev', name='ajax_ajaxResponseReciev'),
-                       url(r'^rateIt/$','ajaxRateIt',name='ajax_RateIt'),
-                       )
+                       url(r'^rateIt/$','ajaxRateIt',name='ajax_RateIt')
+    )

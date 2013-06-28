@@ -272,8 +272,9 @@ def twistDetail(request,twistid):
 	     	# 	return HttpResponseRedirect("/gstudio/group/gnowsys-grp/"+str(grpid))
    
 	twist=Gbobject.objects.get(id=twistid)
-	admin_id=twist.authors.all()[0].id
-        thread= twist.in_gbobject_set_of.all()[0]
+        if twist:
+                admin_id=twist.authors.all()[0].id
+                thread= twist.in_gbobject_set_of.all()[0]
         grp= thread.system_set.all()[0]
         meeting_ob = System.objects.filter(id=grp.id)
         if meeting_ob:

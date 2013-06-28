@@ -78,7 +78,6 @@ def AjaxRelationright(request):
     rlist={}
     idenid = request.GET["id"]
     rts=Relationtype.objects.filter(id=idenid)
-    print "rtsright",rts
     for each in rts:
        subj=str(each.right_subjecttype.title)
        appltype=each.right_applicable_nodetypes
@@ -339,7 +338,6 @@ def selectionlist_UP(obj):
     
     obs=Objecttype.objects.all()
     #Get all members UP
-    print 'obs=',obs
     for each in obs:
         childrenots=each.get_children()
         for eachchild in childrenots: 
@@ -407,7 +405,14 @@ def AjaxAddDrawer(request):
     list1=request.GET["title"]
     wtitle=request.GET["wtitle"]
     collection=request.GET["collection"]
-   
+    rt=Relationtype.objects.get(title="includes")
+    if rt:
+        relset=Relation.objects.filter(relationtype_id=rt.id)
+        j=0
+	if relset:
+            relset1=relset.filter(left_subject_id=wtitle)
+	    relset1.delete()
+  
     if collection:
         collection=True
     else:
@@ -440,6 +445,12 @@ def AjaxAddDrawer(request):
         n_set=[]
     
         while i<len(list2):
+            r=Relation()
+            r.left_subject_id=wtitle
+            r.right_subject_id=list2[i]
+            r.relationtype_id=rt.id
+            r.save()
+            
             objs=Gbobject.objects.get(id=list2[i])
             sys.gbobject_set.add(objs)
             n_set.append(list2[i])
@@ -564,7 +575,6 @@ def HtmlExport(request):
     n=""
     for line in s:
         n += line.lstrip()
-    print r1
     ap.write(n)
     ap.close()
     src=FILE_URL+fname+".html"
@@ -596,14 +606,11 @@ def IsWiki(request):
         return HttpResponse("sucess")
 
 def ajaxDeletePriorpage(request):
-	print "in ajax"
 	objectid1 = ""
 	gbid1=""
 	if request.is_ajax() and request.method =="POST":
-		print "in get"
 		objectid1=request.POST['objectid1']
 		objectid2=request.POST['objectid2']
-		print objectid1,objectid2,"objectsid"
 		gbid1=Gbobject.objects.get(id=objectid1)
 		gbid2 = Gbobject.objects.get(id=objectid2)
 		gbid1.prior_nodes.remove(gbid2)
@@ -616,7 +623,6 @@ def ajaxDeletePriorpage(request):
         return render_to_response(template, variables)
 
 def ajaxAddResponsesToTwist(request):
-    print "ajax view"
     userid = ''
     admin_id = ''
     response_content=""
@@ -639,7 +645,7 @@ def ajaxAddResponsesToTwist(request):
     variables = RequestContext(request, {'comment':twistobject , 'idusr' : int(userid), 'flag' : "True", 'admin_id' : admin_id , 'attribute' : attribute})
     template = "gstudio/tags/comment.html"
     return render_to_response(template,variables)
-#Ajax views for retriving comment for auto refresh in Loom>twist Response div                                                                 
+#Ajax views for retriving comment for auto refresh in Loom>twist Response div
 def ajaxResponseReciev(request):
     userid = ''
     admin_id = ''
@@ -659,6 +665,7 @@ def ajaxResponseReciev(request):
  attribute})
     template = "gstudio/tags/comment.html"
     return render_to_response(template,variables)
+
 
 def ajaxSendInvitation(request):
     userid = ''
@@ -694,7 +701,6 @@ def ajaxuserListForInvitation(request):
         systemid=request.GET['systemid']
         senderuserid=request.GET['senderuserid']
     userlist = []
-    print systemid,senderuserid,"df"
     for each in User.objects.all():
 	if not each.id == senderuserid:
 	      userlist.append(each.username.__str__()+"  <"+each.email.__str__()+">")
@@ -710,15 +716,11 @@ def ajaxReleaseBlockResponseOfTwist(request):
         threadTwistid=request.POST['threadTwistid']
         twistActivity=request.POST['twistActivity']
     gbobjecttwist = Gbobject.objects.filter(id=threadTwistid)
-    print " ajz"
     if gbobjecttwist:
 	gbobjecttwist = Gbobject.objects.get(id=threadTwistid)
 	if gbobjecttwist.subject_of.all():	
-	    print "inside if"
 	    for each in gbobjecttwist.subject_of.all():
-		print "inside for ",each
 		if each.attributetype.title=="release":
-		    print "inside if"
 		    each.svalue=twistActivity
 		    gbobjecttwist.subject_of.add(each)
 		    checkAttribute = True
@@ -740,14 +742,20 @@ def ajaxRateIt(request):
     rating = ""
     if request.is_ajax() and request.method =="POST":
         objectid = request.POST['objectid']
-        rating = request.POST['data']
+	rating = request.POST['data']
     ob = Gbobject.objects.get(id=objectid)
     ob.rating.add(score=rating ,user=request.user, ip_address=request.META['REMOTE_ADDR'])
     variables = RequestContext(request, { 'object' : ob})
     template = "gstudio/addingrate.html"
-    return render_to_response(template,variables) 
+    return render_to_response(template,variables)                         
                 
                 
+def Status(request):
+    page_ob=request.GET["pageobj"]
+    sys=System.objects.get(id=page_ob)
+    sys.status = 2
+    sys.save()
+    return HttpResponse("sucess")
 
             
 
