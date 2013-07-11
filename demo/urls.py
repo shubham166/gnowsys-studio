@@ -62,6 +62,7 @@ urlpatterns = patterns(
     url(r'^nodetypes/admin/', include(admin.site.urls)),
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^notification/',include('notification.urls')),
+    url(r'^ajax/',include('gstudio.urls.Oxjsurls')),#for oxjs
     url(r'^accounts/register/$', register, {'backend': 'gstudio.regbackend.MyBackend','form_class': UserRegistrationForm}, name='registration_register'),
 
     url(r'^accounts/', include('registration.urls')),

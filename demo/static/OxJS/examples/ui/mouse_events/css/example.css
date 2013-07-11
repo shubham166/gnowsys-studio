@@ -1,0 +1,52 @@
+#clear {
+    position: absolute;
+    left: 256px;
+    right: 0px;
+    height: 14px;
+    padding: 2px 0 0 2px;
+    cursor: pointer;
+}
+#log {
+    position: absolute;
+    left: 256px;
+    top: 16px;
+    right: 0;
+    bottom: 0;
+    border-width: 0;
+    overflow-y: auto;
+}
+#target {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 253px;
+    padding: 2px 0 0 2px;
+    border-width: 0;
+    font-weight: bold;
+    cursor: crosshair;
+}
+
+.OxThemeClassic #clear {
+    background: rgb(240, 240, 240);
+}
+.OxThemeClassic #log {
+    border-top: 1px solid rgb(208, 208, 208);
+    background: rgb(255, 255, 255);
+}
+.OxThemeClassic #target {
+    border-right: 1px solid rgb(208, 208, 208);
+    background: rgb(224, 224, 224);
+}
+
+.OxThemeModern #clear {
+    background: rgb(16, 16, 16);
+}
+.OxThemeModern #log {
+    border-top: 1px solid rgb(48, 48, 48);
+    background: rgb(0, 0, 0)
+}
+.OxThemeModern #target {
+    border-right: 1px solid rgb(48, 48, 48);
+    background: rgb(32, 32, 32);
+}

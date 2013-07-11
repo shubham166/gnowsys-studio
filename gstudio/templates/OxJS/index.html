@@ -1,0 +1,93 @@
+{% load gstudio_tags %}
+
+<!-- 
+ UI Tree
+***********
+	outerPanel
+		menuToolbar
+			mainMenu
+		toolbar1
+			themeButtons
+		innerPanel
+			listPanel
+			rightPanel
+				toolbar2
+					innerGroupButtons
+				viewPanel
+					rightInnerPanel	
+					tablePanel
+						priorPanel
+						tagsPanel
+						posteriorPanel
+
+-->
+
+
+<html>
+<head>
+
+	<script type="text/javascript" src="/static/OxJS/dev/Ox.js"></script>
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script> 
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/mainMenu.js"></script>	
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/outerPanel.js"> </script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/menuToolbar.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/list.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/topGroupButtons.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/toolbar.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/findInput.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/box.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/rightInnerPanel.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/tabButton.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/input.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/priorPanel.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/rightTable.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/getGraph.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/innerGroupButton.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/viewPanel.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/themeButtons.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/userButtons.js"></script>
+
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/tablePanel.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/listPanel.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/rightPanel.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/OxJS/innerPanel.js"></script>
+	<script type="text/javascript" src="/static/gstudio/js/jquery.min.js" ></script>
+
+				<script type="text/javascript" src="/static/gstudio/js/jquery-ui.js" ></script>
+				<script type="text/javascript" src="/static/gstudio/js/underscore.js" ></script>
+				<script type="text/javascript" src="/static/gstudio/js/d3.js"></script>
+				<script type="text/javascript" src="/static/gstudio/js/d3.layout.js"></script>
+				<script type="text/javascript" src="/static/gstudio/js/d3.geom.js"></script>
+				
+	
+	<!--<script type="text/javascript" src="/static/gstudio/js/OxJS/mainMenu.js"/>
+	<!--<<script type="text/javascript" src="/static/gstudio/js/OxJS/menuToolbar.js"/>!-->
+	
+	<script type="text/javascript">
+		Ox.load("UI",function() {
+		var outer= $outerPanel().appendTo(Ox.$body);
+		console.log("Height"+screen.height);
+		console.log("Width"+screen.width)
+	});
+	</script>
+	<style>
+		.prior,.prior1{float: left; padding:10px;}
+		.prior{float:right;}
+
+		.divContent{
+			height : 3000%;
+			overflow-y :scroll;
+			padding: 10px;
+			text-align:justify;
+			width : 90%;
+		}
+		.themeButtonCss
+		{
+			float : right;		
+		}
+	</style>
+</head>
+<body>
+	<div>{% include "gstudio/getGraph.html" %}</div>
+</body>
+</html>

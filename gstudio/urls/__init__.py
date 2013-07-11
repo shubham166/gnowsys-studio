@@ -57,6 +57,7 @@ urlpatterns = patterns(
     url(r'^resources/documents',include('gstudio.urls.docu')),
     url(r'^resources/loom/',include('gstudio.urls.loom')),
     url(r'^userpreference/',include('gstudio.urls.userpreference')),
+	url(r'^resources/New/',include('gstudio.urls.New')),
 
     )
 
